@@ -2,8 +2,11 @@
   "name": "greenscreenstream",
   "version": "1.0.0-beta.5",
   "description": "Genereate new MediaStreams or Canvas elements based on MediaStreams (webcam ) with any background image. Green screen your webcam!",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build:lib": "tsc --build tsconfig.json",
+    "build:example": "tsc --build tsconfig.example.json",
+    "build": "npm run build:lib && npm run build:example",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Magnus Thor",
@@ -28,8 +31,11 @@
   "dependencies": {
     "@tensorflow-models/body-pix": "^2.0.5",
     "@tensorflow/tfjs": "^1.7.2",
-    "@types/webgl2": "0.0.5",
     "demolishedrenderer": "^2.1.0-beta.2",
     "quantize": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/webgl2": "^0.0.5",
+    "typescript": "^3.4.3"
   }
 }

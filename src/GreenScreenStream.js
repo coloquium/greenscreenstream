@@ -1,20 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const demolishedrenderer_1 = require("demolishedrenderer");
-const quantize_1 = __importDefault(require("quantize"));
+import { DR } from 'demolishedrenderer';
+import quantize from 'quantize';
 const bodyPix = require('@tensorflow-models/body-pix');
-class GreenScreenStream {
-    /**
-     *Creates an instance of GreenScreenStream.
-     * @param {string} backgroudImage backgound image that replaces the "green"
-     * @param {HTMLCanvasElement} [canvas] HTML5 Canvas element to render to, optional
-     * @param {number} [width] width of the HTML5 Canvas element, optional.
-     * @param {number} [height] height of the HTML5 Canvas element, optional.
-     * @memberof GreenScreenStream
-     */
+export class GreenScreenStream {
     constructor(useML, backgroudImage, canvas, width, height) {
         this.useML = useML;
         this.chromaKey = { r: 0.05, g: 0.63, b: 0.14 };
@@ -85,7 +72,7 @@ void main(){
         this.ctx = this.canvas.getContext("webgl2");
         this.mediaStream = new MediaStream();
         if (backgroudImage) {
-            this.renderer = new demolishedrenderer_1.DR(this.canvas, this.mainVert, this.mainFrag);
+            this.renderer = new DR(this.canvas, this.mainVert, this.mainFrag);
             this.renderer.aA({
                 "background": {
                     num: 33985,
@@ -114,36 +101,15 @@ void main(){
             });
         }
     }
-    /**
-     * Set the color to be removed
-     * i.e (0.05,0.63,0.14)
-     * @param {number} r  0.0 - 1.0
-     * @param {number} g 0.0 - 1.0
-     * @param {number} b 0.0 - 1.0
-     * @memberof GreenScreenStream
-     */
     setChromaKey(r, g, b) {
         this.chromaKey.r = r;
         this.chromaKey.g = g;
         this.chromaKey.b = b;
     }
-    /**
-     * Range is used to decide the amount of color to be used from either foreground or background.
-     * Playing with this variable will decide how much the foreground and background blend together.
-     * @param {number} x
-     * @param {number} y
-     * @memberof GreenScreenStream
-     */
     setMaskRange(x, y) {
         this.maskRange.x = x;
         this.maskRange.y = y;
     }
-    /**
-     * Get the most dominant color and a list (palette) of the colors most common in the provided MediaStreamTrack
-     *
-     * @returns {{ palette: any, dominant: any }}
-     * @memberof GreenScreenStream
-     */
     getColorsFromStream() {
         let glCanvas = this.canvas;
         let tempCanvas = document.createElement("canvas");
@@ -184,13 +150,6 @@ void main(){
         };
         update();
     }
-    /**
-     * Start renderer
-     *
-     * @param {number} [fps]
-     * @param {*} [config]
-     * @memberof GreenScreenStream
-     */
     render(fps, config) {
         if (!this.renderer)
             throw "Now renderer created.Background image must be provided.";
@@ -212,13 +171,6 @@ void main(){
             this.cameraSource = this.sourceVideo;
         this.renderer.run(0, fps || 25);
     }
-    /**
-     * Get a masked image/canvas of -n persons
-     *
-     * @param {HTMLCanvasElement} target
-     * @param {*} [config]
-     * @memberof GreenScreenStream
-     */
     getMask(target, config) {
         bodyPix.load({
             architecture: 'MobileNetV1',
@@ -231,12 +183,6 @@ void main(){
             });
         });
     }
-    /**
-     * Add a MediaStreamTrack track (i.e webcam )
-     *
-     * @param {MediaStreamTrack} track
-     * @memberof GreenScreenStream
-     */
     addVideoTrack(track) {
         this.mediaStream.addTrack(track);
         this.sourceVideo = document.createElement("video");
@@ -246,26 +192,9 @@ void main(){
         this.sourceVideo.play();
         this.cameraSource = this.sourceVideo;
     }
-    /**
-     * Capture the rendered result to a MediaStream
-     *
-     * @param {number} [fps]
-     * @returns {MediaStream}
-     * @memberof GreenScreenStream
-     */
     captureStream(fps) {
         return this.canvas["captureStream"](fps || 25);
     }
-    /**
-     *  Get an instance instance of GreenScreenStream.
-     * @static
-      * @param {string} backgroudImage backgound image that replaces the "green"
-     * @param {HTMLCanvasElement} [canvas] HTML5 Canvas element to render to, optional
-     * @param {number} [width] width of the HTML5 Canvas element, optional.
-     * @param {number} [height] height of the HTML5 Canvas element, optiona
-     * @returns {GreenScreenStream}
-     * @memberof GreenScreenStream
-     */
     static getInstance(useAI, backgroudImage, canvas, width, height) {
         return new GreenScreenStream(useAI, backgroudImage, canvas, width, height);
     }
@@ -285,34 +214,17 @@ void main(){
         }
         return pixelArray;
     }
-    /**
-     *  Get the dominant color from the MediaStreamTrack provided
-     *
-     * @param {ImageData} imageData
-     * @param {number} pixelCount
-     * @returns
-     * @memberof GreenScreenStream
-     */
     dominant(imageData, pixelCount) {
         const p = this.pallette(imageData, pixelCount);
         const d = p[0];
         return d;
     }
     ;
-    /**
-     * Get a pallette (10) of the most used colors in the MediaStreamTrack provided
-     *
-     * @param {ImageData} imageData
-     * @param {number} pixelCount
-     * @returns
-     * @memberof GreenScreenStream
-     */
     pallette(imageData, pixelCount) {
         const pixelArray = this.pixelArray(imageData.data, pixelCount, 10);
-        const cmap = quantize_1.default(pixelArray, 8);
+        const cmap = quantize(pixelArray, 8);
         const palette = cmap ? cmap.palette() : null;
         return palette;
     }
     ;
 }
-exports.GreenScreenStream = GreenScreenStream;

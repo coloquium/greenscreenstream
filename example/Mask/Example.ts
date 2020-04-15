@@ -1,4 +1,4 @@
-import { GreenScreenStream, MaskSettings } from '../../src/GreenScreenStream';
+import { GreenScreenStream } from '../../lib/src/GreenScreenStream.js';
 
 document.addEventListener("DOMContentLoaded", () => {
 

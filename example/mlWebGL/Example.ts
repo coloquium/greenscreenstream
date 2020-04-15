@@ -1,4 +1,4 @@
-import { GreenScreenStream } from "../../src/GreenScreenStream";
+import { GreenScreenStream } from "../../lib";
 
 document.addEventListener("DOMContentLoaded", () => {
 
